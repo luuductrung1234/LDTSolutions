@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using LDTSolutions.Common.WebApi.NodeModules;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -53,7 +54,12 @@ namespace OdeToFood
          }
 
          app.UseHttpsRedirection();
+
          app.UseStaticFiles();
+
+         // custom Middleware to provide client_side libraries in directory "~/node_modules/"
+         app.UseNodeModules();
+
          app.UseCookiePolicy();
 
          app.UseMvc();

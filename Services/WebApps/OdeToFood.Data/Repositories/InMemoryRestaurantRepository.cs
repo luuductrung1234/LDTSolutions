@@ -23,9 +23,23 @@ namespace OdeToFood.Data.Repositories
          };
       }
 
-      public async Task<IEnumerable<Restaurant>> GetAllAsync()
+      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name)
       {
-         return await Task.FromResult(_restaurants.ToList());
+         var query = _restaurants.AsQueryable();
+
+         if (!string.IsNullOrEmpty(name))
+         {
+            query = query.Where(r => r.Name.StartsWith(name));
+         }
+
+         return await Task.FromResult(query.ToList());
+      }
+
+      public async Task<IEnumerable<Restaurant>> GetByNameAsync(string name)
+      {
+         return await Task.FromResult(_restaurants
+            .Where(r => string.IsNullOrEmpty(name) || r.Name.StartsWith(name))
+            .ToList());
       }
    }
 }

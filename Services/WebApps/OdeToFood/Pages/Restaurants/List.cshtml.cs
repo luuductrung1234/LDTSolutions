@@ -20,9 +20,9 @@ namespace OdeToFood.Pages.Restaurants
          _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
       }
 
-      public async Task OnGet()
+      public async Task OnGet(string restaurantName)
       {
-         Restaurants = await _restaurantRepository.GetAllAsync();
+         Restaurants = await _restaurantRepository.GetAllAsync(name: restaurantName);
       }
    }
 }
