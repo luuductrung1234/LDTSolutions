@@ -35,11 +35,37 @@ namespace OdeToFood.Data.Repositories
          return await Task.FromResult(query.ToList());
       }
 
+      public async Task<Restaurant> GetByIdAsync(Guid id)
+      {
+         return await Task.FromResult(_restaurants.FirstOrDefault(r => r.Id == id));
+      }
+
       public async Task<IEnumerable<Restaurant>> GetByNameAsync(string name)
       {
          return await Task.FromResult(_restaurants
             .Where(r => string.IsNullOrEmpty(name) || r.Name.StartsWith(name))
             .ToList());
+      }
+
+      public async Task<Restaurant> UpdateAsync(Restaurant restaurant)
+      {
+         return await Task.Run(() =>
+         {
+            var restaurantToUpdate = _restaurants.FirstOrDefault(r => r.Id == restaurant.Id);
+            if(restaurantToUpdate != null)
+            {
+               restaurantToUpdate.SetName(restaurant.Name);
+               restaurantToUpdate.SetLocation(restaurant.Location);
+               restaurantToUpdate.SetCuisineType(restaurant.CuisineType);
+            }
+
+            return restaurantToUpdate;
+         });
+      }
+
+      public int Commit()
+      {
+         return 0;
       }
    }
 }

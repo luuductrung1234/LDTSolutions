@@ -26,5 +26,20 @@ namespace OdeToFood.Core.Models
          Location = location;
          CuisineType = cuisineType;
       }
+
+      public void SetName(string name)
+      {
+         Name = name;
+      }
+
+      public void SetLocation(string location)
+      {
+         Location = location;
+      }
+
+      public void SetCuisineType(CuisineType cuisineType)
+      {
+         CuisineType = cuisineType;
+      }
    }
 }

@@ -9,12 +9,27 @@ namespace OdeToFood.Data.Repositories
 {
    public class RestaurantRepository : IRestaurantRepository
    {
+      public int Commit()
+      {
+         throw new NotImplementedException();
+      }
+
       public Task<IEnumerable<Restaurant>> GetAllAsync(string name)
       {
          throw new NotImplementedException();
       }
 
+      public Task<Restaurant> GetByIdAsync(Guid id)
+      {
+         throw new NotImplementedException();
+      }
+
       public Task<IEnumerable<Restaurant>> GetByNameAsync(string name)
+      {
+         throw new NotImplementedException();
+      }
+
+      public Task<Restaurant> UpdateAsync(Restaurant restaurant)
       {
          throw new NotImplementedException();
       }

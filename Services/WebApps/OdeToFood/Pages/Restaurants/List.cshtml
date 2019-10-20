@@ -4,11 +4,11 @@
    ViewData["Title"] = "List";
 }
 
-<h1>Restaurants</h1>
+<h2>Restaurants</h2>
 
 <form method="get">
    <div class="input-group">
-      <input type="search" class="form-control" name="restaurantName" value="" />
+      <input type="search" class="form-control" asp-for="SearchTerm" />
       <div class="input-group-append">
          <button class="btn btn-outline-secondary" type="button">
             <i class="fas fa-search"></i>
@@ -23,6 +23,7 @@
          <th>Name</th>
          <th>Location</th>
          <th>Cuisine</th>
+         <th>&ensp;</th>
       </tr>
    </thead>
    <tbody>
@@ -32,6 +33,18 @@
             <td>@restaurant.Name</td>
             <td>@restaurant.Location</td>
             <td>@restaurant.CuisineType</td>
+            <td>
+               <a class="btn btn-lg"
+                  asp-page="./Detail"
+                  asp-route-restaurantId="@restaurant.Id">
+                  <i class="fas fa-info-circle"></i>
+               </a>
+               <a class="btn btn-lg"
+                  asp-page="./Edit"
+                  asp-route-restaurantId="@restaurant.Id">
+                  <i class="fas fa-edit"></i>
+               </a>
+            </td>
          </tr>
       }
    </tbody>

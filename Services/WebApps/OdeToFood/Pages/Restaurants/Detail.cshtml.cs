@@ -1,31 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-
 using OdeToFood.Core.Interfaces;
 using OdeToFood.Core.Models;
 
 namespace OdeToFood.Pages.Restaurants
 {
-   public class ListModel : PageModel
+   public class DetailModel : PageModel
    {
       private readonly IRestaurantRepository _restaurantRepository;
 
-      public IEnumerable<Restaurant> Restaurants { get; private set; }
+      public Restaurant Restaurant { get; private set; }
 
-      [BindProperty(SupportsGet = true)]
-      public string SearchTerm { get; private set; }
-
-      public ListModel(IRestaurantRepository restaurantRepository)
+      public DetailModel(IRestaurantRepository restaurantRepository)
       {
          _restaurantRepository = restaurantRepository ?? throw new ArgumentNullException(nameof(restaurantRepository));
       }
 
-      public async Task OnGet()
+      public async Task<IActionResult> OnGet(Guid restaurantId)
       {
-         Restaurants = await _restaurantRepository.GetAllAsync(name: SearchTerm);
+         if(restaurantId == Guid.Empty)
+         {
+            return RedirectToPage("./NotFound");
+         }
+
+         Restaurant = await _restaurantRepository.GetByIdAsync(restaurantId);
+
+         return Page();
       }
    }
 }

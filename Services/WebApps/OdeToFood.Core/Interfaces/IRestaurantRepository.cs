@@ -11,5 +11,11 @@ namespace OdeToFood.Core.Interfaces
       Task<IEnumerable<Restaurant>> GetAllAsync(string name);
 
       Task<IEnumerable<Restaurant>> GetByNameAsync(string name);
+
+      Task<Restaurant> GetByIdAsync(Guid id);
+
+      Task<Restaurant> UpdateAsync(Restaurant restaurant);
+
+      int Commit();
    }
 }
