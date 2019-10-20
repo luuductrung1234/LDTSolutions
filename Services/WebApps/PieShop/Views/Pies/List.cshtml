@@ -1,0 +1,29 @@
+﻿@model PiesListViewModel
+
+@if (Model.CurrentCategory != null)
+{
+   <div>
+      <h2>@Model.CurrentCategory.Name</h2>
+   </div>
+}
+
+<div class="row">
+   @foreach (var pie in Model.Pies)
+   {
+      <div class="card col-sm-6 col-md-6 col-lg-4 col-xl-4">
+         <img src="@pie.ImageThumbnailUrl" class="card-img" alt="@pie.Name">
+         <div class="card-body">
+            <div class="row">
+               <div class="col-md-8">
+                  <h3 class="text-left"><a href="#">@pie.Name</a></h3>
+               </div>
+               <div class="col-md-4">
+                  <h3 class="text-right">@pie.Price</h3>
+               </div>
+            </div>
+            <p class="card-text">@pie.ShortDescription</p>
+            <a href="#" class="btn btn-primary">View Details</a>
+         </div>
+      </div>
+   }
+</div>

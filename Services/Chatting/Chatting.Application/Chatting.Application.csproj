@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chatting.Common\Chatting.Common.csproj" />
+    <ProjectReference Include="..\Chatting.Domain\Chatting.Domain.csproj" />
+    <ProjectReference Include="..\Chatting.Infrastructure\Chatting.Infrastructure.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="FluentValidation" Version="8.5.0" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="SalesHub.Common.Core" Version="1.2.2" />
+    <PackageReference Include="SalesHub.Common.EventBusServiceBus" Version="1.0.7" />
+    <PackageReference Include="SalesHub.Common.IntegrationEventLog" Version="1.2.3" />
+    <PackageReference Include="SalesHub.Common.Logger" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Queries\RoomQueries\" />
+    <Folder Include="Queries\UserQueries\" />
+  </ItemGroup>
+
+</Project>

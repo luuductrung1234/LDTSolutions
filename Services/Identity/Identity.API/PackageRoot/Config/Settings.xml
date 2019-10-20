@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Settings xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <!-- Add your custom configuration sections and parameters here -->
+   <Section Name="Logging:LogLevel">
+      <Parameter Name="Default" Value="Value1"/>
+      <Parameter Name="System" Value="Value1"/>
+      <Parameter Name="Microsoft" Value="Value1"/>
+   </Section>
+   <Section Name="IdentityDb">
+      <Parameter Name="ConnectionString" Value="Value1"/>
+   </Section>
+   <Section Name="Token">
+      <Parameter Name="TokenLifeTimeMinutes" Value="Value1" />
+      <Parameter Name="PermanentTokenLifetimeDays" Value="Value1" />
+   </Section>
+</Settings>

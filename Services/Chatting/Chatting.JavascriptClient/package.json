@@ -1,0 +1,19 @@
+{
+  "name": "simplechatclient",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aspnet/signalr": "^1.1.4",
+    "@aspnet/signalr-protocol-msgpack": "^1.1.0",
+    "bootstrap": "^4.3.1",
+    "connect": "^3.7.0",
+    "serve-static": "^1.14.1"
+  }
+}

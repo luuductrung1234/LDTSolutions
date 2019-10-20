@@ -1,0 +1,9 @@
+﻿.navbar-brand img .d-inline-block {
+   display: inline-block;
+}
+
+.my-container {
+   width: 85vw;
+   margin-left: auto;
+   margin-right: auto;
+}

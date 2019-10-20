@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Application xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" Name="fabric:/LDTSolutions" xmlns="http://schemas.microsoft.com/2011/01/fabric">
+  <Parameters>
+    <!-- Identity API Service -->
+    <Parameter Name="Identity.API_ASPNETCORE_ENVIRONMENT" Value="LOCAL" />
+    <Parameter Name="Identity.API_InstanceCount" Value="1" />
+    <Parameter Name="Identity:TokenLifeTimeMinutes" Value="120" />
+    <Parameter Name="Identity:PermanentTokenLifetimeDays" Value="365" />
+    <!-- Chatting API Service -->
+    <Parameter Name="Chatting.API_ASPNETCORE_ENVIRONMENT" Value="LOCAL" />
+    <Parameter Name="Chatting.API_InstanceCount" Value="1" />
+    <!-- Logging -->
+    <Parameter Name="Logging:LogLevel:Default" Value="Debug" />
+    <Parameter Name="Logging:LogLevel:System" Value="Information" />
+    <Parameter Name="Logging:LogLevel:Microsoft" Value="Information" />
+    <Parameter Name="Logging:LogLevel:Microsoft.AspNetCore.SignalR" Value="Debug" />
+    <Parameter Name="Logging:LogLevel:Microsoft.AspNetCore.Http.Connections" Value="Debug" />
+    <!-- Services Database -->
+    <Parameter Name="ServiceDb:ConnectionString" Value="mongodb+srv://sa:Trung1997@saleshub-local-cluster-dehib.mongodb.net/test" />
+    <Parameter Name="ServiceDb:DatabaseName" Value="LDTSolutions_Database" />
+    <!-- Master Database -->
+    <Parameter Name="MasterDataDb:ConnectionString" Value="Server=localhost,1433;Database=ldtsoulutions-masterdata;User Id=sa;Password=Trung1997;" />
+    <!-- Identity Database -->
+    <Parameter Name="IdentityDb:ConnectionString" Value="Server=localhost,1433;Database=ldtsoulutions-masterdata;User Id=sa;Password=Trung1997;" />
+    <!-- Azure SignalR Service -->
+    <Parameter Name="Azure:SignalR:ConnectionString" Value="" />
+  </Parameters>
+</Application>

@@ -1,0 +1,37 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+   <meta name="viewport" content="width=device-width" />
+   <title>PieShop - @ViewBag.Title</title>
+
+   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro">
+   <link href="~/lib/bootstrap/css/bootstrap.css" rel="stylesheet" />
+   <link href="~/content/style.css" rel="stylesheet" />
+</head>
+<body>
+
+   <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="#">
+         <img src="~/images/bethanylogo.png" width="30" height="30" class="d-inline-block align-top" alt="">
+         <span class="d-inline-block">PieShop</span>
+      </a>
+   </nav>
+
+   <div class="my-container">
+      <div class="row">
+         <div class="col-md-3">
+            <p class="lead">
+               <img class="img-responsive" src="~/images/bethanylogo.png" alt="PieShop Logo" />
+            </p>
+         </div>
+         <div class="col-md-9">
+            @RenderBody()
+         </div>
+      </div>
+   </div>
+
+   <script src="~/lib/jquery/jquery.js"></script>
+   <script src="~/lib/bootstrap/js/bootstrap.js"></script>
+</body>
+</html>
