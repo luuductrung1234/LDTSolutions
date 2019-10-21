@@ -14,6 +14,8 @@ namespace OdeToFood.Core.Interfaces
 
       Task<Restaurant> GetByIdAsync(Guid id);
 
+      Task<Restaurant> AddAsync(Restaurant restaurant);
+
       Task<Restaurant> UpdateAsync(Restaurant restaurant);
 
       int Commit();

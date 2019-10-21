@@ -9,6 +9,11 @@ namespace OdeToFood.Data.Repositories
 {
    public class RestaurantRepository : IRestaurantRepository
    {
+      public Task<Restaurant> AddAsync(Restaurant restaurant)
+      {
+         throw new NotImplementedException();
+      }
+
       public int Commit()
       {
          throw new NotImplementedException();

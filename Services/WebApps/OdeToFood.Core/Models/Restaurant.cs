@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace OdeToFood.Core.Models
 {
@@ -25,6 +26,11 @@ namespace OdeToFood.Core.Models
          Name = name;
          Location = location;
          CuisineType = cuisineType;
+      }
+
+      public void GenerateId()
+      {
+         Id = Guid.NewGuid();
       }
 
       public void SetName(string name)

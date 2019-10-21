@@ -13,6 +13,9 @@ namespace OdeToFood.Pages.Restaurants
    {
       private readonly IRestaurantRepository _restaurantRepository;
 
+      [TempData]
+      public string Message { get; set; }
+
       public Restaurant Restaurant { get; private set; }
 
       public DetailModel(IRestaurantRepository restaurantRepository)

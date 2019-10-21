@@ -47,12 +47,24 @@ namespace OdeToFood.Data.Repositories
             .ToList());
       }
 
+      public async Task<Restaurant> AddAsync(Restaurant restaurant)
+      {
+         return await Task.Run(() =>
+         {
+            restaurant.GenerateId();
+
+            _restaurants.Add(restaurant);
+
+            return restaurant;
+         });
+      }
+
       public async Task<Restaurant> UpdateAsync(Restaurant restaurant)
       {
          return await Task.Run(() =>
          {
             var restaurantToUpdate = _restaurants.FirstOrDefault(r => r.Id == restaurant.Id);
-            if(restaurantToUpdate != null)
+            if (restaurantToUpdate != null)
             {
                restaurantToUpdate.SetName(restaurant.Name);
                restaurantToUpdate.SetLocation(restaurant.Location);
