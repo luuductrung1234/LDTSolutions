@@ -5,6 +5,8 @@ using System.Collections.Generic;
 
 using OdeToFood.Core.Interfaces;
 using OdeToFood.Core.Models;
+using System.Threading;
+using OdeToFood.Core.Exceptions;
 
 namespace OdeToFood.Data.Repositories
 {
@@ -23,7 +25,7 @@ namespace OdeToFood.Data.Repositories
          };
       }
 
-      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name)
+      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name, CancellationToken cancellationToken = default)
       {
          var query = _restaurants.AsQueryable();
 
@@ -35,19 +37,19 @@ namespace OdeToFood.Data.Repositories
          return await Task.FromResult(query.ToList());
       }
 
-      public async Task<Restaurant> GetByIdAsync(Guid id)
+      public async Task<Restaurant> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
       {
          return await Task.FromResult(_restaurants.FirstOrDefault(r => r.Id == id));
       }
 
-      public async Task<IEnumerable<Restaurant>> GetByNameAsync(string name)
+      public async Task<IEnumerable<Restaurant>> GetByNameAsync(string name, CancellationToken cancellationToken = default)
       {
          return await Task.FromResult(_restaurants
             .Where(r => string.IsNullOrEmpty(name) || r.Name.StartsWith(name))
             .ToList());
       }
 
-      public async Task<Restaurant> AddAsync(Restaurant restaurant)
+      public async Task<Restaurant> AddAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
       {
          return await Task.Run(() =>
          {
@@ -56,10 +58,10 @@ namespace OdeToFood.Data.Repositories
             _restaurants.Add(restaurant);
 
             return restaurant;
-         });
+         }, cancellationToken);
       }
 
-      public async Task<Restaurant> UpdateAsync(Restaurant restaurant)
+      public async Task<Restaurant> UpdateAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
       {
          return await Task.Run(() =>
          {
@@ -72,12 +74,23 @@ namespace OdeToFood.Data.Repositories
             }
 
             return restaurantToUpdate;
-         });
+         }, cancellationToken);
       }
 
-      public int Commit()
+      public async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
       {
-         return 0;
+         return await Task.Run(() =>
+         {
+            var restaurantToDelete = _restaurants.FirstOrDefault(r => r.Id == id);
+            if (restaurantToDelete == null)
+            {
+               throw new RestaurantNotFoundException(id);
+            }
+
+            restaurantToDelete.SetDeleted();
+
+            return 0;
+         }, cancellationToken);
       }
    }
 }

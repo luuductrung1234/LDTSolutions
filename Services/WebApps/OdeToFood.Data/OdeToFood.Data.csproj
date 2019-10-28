@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Common\LDTSolutions.Common.EntityFrameworkCore\LDTSolutions.Common.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\OdeToFood.Core\OdeToFood.Core.csproj" />
   </ItemGroup>
 

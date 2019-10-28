@@ -6,6 +6,13 @@
 
 <h2>Edit @Model.RestaurantDto.Name</h2>
 
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+   <div class="alert alert-warning" role="alert">
+      @Model.Message
+   </div>
+}
+
 <form method="post">
    <input type="hidden" asp-for="RestaurantDto.Id" />
    <div class="form-group">

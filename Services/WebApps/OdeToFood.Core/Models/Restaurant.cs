@@ -1,12 +1,11 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
+
+using LDTSolutions.Common.Domain;
 
 namespace OdeToFood.Core.Models
 {
-   public class Restaurant
+   public class Restaurant : Entity
    {
-      public Guid Id { get; private set; }
-
       public string Name { get; private set; }
 
       public string Location { get; private set; }

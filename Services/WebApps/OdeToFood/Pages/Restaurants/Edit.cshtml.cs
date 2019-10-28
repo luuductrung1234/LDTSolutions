@@ -16,6 +16,8 @@ namespace OdeToFood.Pages.Restaurants
       private readonly IRestaurantRepository _restaurantRepository;
       private readonly IHtmlHelper _htmlHelper;
 
+      public string Message { get; set; }
+
       [BindProperty]
       public EditRestaurantDto RestaurantDto { get; set; }
 
@@ -53,6 +55,8 @@ namespace OdeToFood.Pages.Restaurants
 
       public async Task<IActionResult> OnPost()
       {
+         Message = "";
+
          if (ModelState.IsValid)
          {
             if (RestaurantDto.Id != Guid.Empty)
@@ -64,12 +68,16 @@ namespace OdeToFood.Pages.Restaurants
                fetchedRestaurant.SetCuisineType(RestaurantDto.CuisineType);
 
                var updatedRestaurant = await _restaurantRepository.UpdateAsync(fetchedRestaurant);
+               if (updatedRestaurant == null)
+               {
+                  Message = "Fail to update Restaurant! Please try again.";
+               }
+               else
+               {
+                  TempData["Message"] = "Restaurant updated!";
 
-               _restaurantRepository.Commit();
-
-               TempData["Message"] = "Restaurant updated!";
-
-               return RedirectToPage("./Detail", new { restaurantId = updatedRestaurant.Id });
+                  return RedirectToPage("./Detail", new { restaurantId = updatedRestaurant.Id });
+               }
             }
             else
             {
@@ -79,11 +87,16 @@ namespace OdeToFood.Pages.Restaurants
 
                var createdRestaurant = await _restaurantRepository.AddAsync(newRestaurant);
 
-               _restaurantRepository.Commit();
+               if (createdRestaurant == null)
+               {
+                  Message = "Fail to create new Restaurant! Please try again.";
+               }
+               else
+               {
+                  TempData["Message"] = "Restaurant created!";
 
-               TempData["Message"] = "Restaurant created!";
-
-               return RedirectToPage("./Detail", new { restaurantId = createdRestaurant.Id });
+                  return RedirectToPage("./Detail", new { restaurantId = createdRestaurant.Id });
+               }
             }
 
          }

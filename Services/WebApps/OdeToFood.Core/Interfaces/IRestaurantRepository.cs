@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 
 using OdeToFood.Core.Models;
@@ -8,16 +9,16 @@ namespace OdeToFood.Core.Interfaces
 {
    public interface IRestaurantRepository
    {
-      Task<IEnumerable<Restaurant>> GetAllAsync(string name);
+      Task<IEnumerable<Restaurant>> GetAllAsync(string name, CancellationToken cancellationToken = default);
 
-      Task<IEnumerable<Restaurant>> GetByNameAsync(string name);
+      Task<IEnumerable<Restaurant>> GetByNameAsync(string name, CancellationToken cancellationToken = default);
 
-      Task<Restaurant> GetByIdAsync(Guid id);
+      Task<Restaurant> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
 
-      Task<Restaurant> AddAsync(Restaurant restaurant);
+      Task<Restaurant> AddAsync(Restaurant restaurant, CancellationToken cancellationToken = default);
 
-      Task<Restaurant> UpdateAsync(Restaurant restaurant);
+      Task<Restaurant> UpdateAsync(Restaurant restaurant, CancellationToken cancellationToken = default);
 
-      int Commit();
+      Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default);
    }
 }
