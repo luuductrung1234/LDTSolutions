@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+
 using OdeToFood.Core.Exceptions;
 using OdeToFood.Core.Interfaces;
 using OdeToFood.Core.Models;
@@ -33,7 +34,7 @@ namespace OdeToFood.Data.Repositories
          return addResult.Entity;
       }
 
-      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name, CancellationToken cancellationToken = default)
+      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name = "", CancellationToken cancellationToken = default)
       {
          var query = _dbContext.Restaurants.Where(r => r.IsDeleted == false);
 
@@ -57,12 +58,7 @@ namespace OdeToFood.Data.Repositories
 
       public async Task<Restaurant> UpdateAsync(Restaurant restaurant, CancellationToken cancellationToken = default)
       {
-         var restaurantToUpdate = await _dbContext.Restaurants.SingleOrDefaultAsync(r => r.Id == restaurant.Id);
-         restaurantToUpdate.SetName(restaurant.Name);
-         restaurantToUpdate.SetLocation(restaurant.Location);
-         restaurantToUpdate.SetCuisineType(restaurant.CuisineType);
-
-         var entity = _dbContext.Attach(restaurantToUpdate);
+         var entity = _dbContext.Attach(restaurant);
          entity.State = EntityState.Modified;
 
          do
@@ -76,7 +72,7 @@ namespace OdeToFood.Data.Repositories
                   return null;
                }
 
-               return restaurantToUpdate;
+               return restaurant;
             }
             catch (DbUpdateConcurrencyException ex)
             {
@@ -86,15 +82,6 @@ namespace OdeToFood.Data.Repositories
                   {
                      var proposedValues = entry.CurrentValues;
                      var databaseValues = entry.GetDatabaseValues();
-
-                     foreach (var property in proposedValues.Properties)
-                     {
-                        var proposedValue = proposedValues[property];
-                        var databaseValue = databaseValues[property];
-
-                        // TODO: decide which value should be written to database
-                        // proposedValues[property] = <value to be saved>;
-                     }
 
                      // Refresh original values to bypass next concurrency check
                      entry.OriginalValues.SetValues(databaseValues);
@@ -108,17 +95,17 @@ namespace OdeToFood.Data.Repositories
          } while (true);
       }
 
-      public async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+      public async Task<Restaurant> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
       {
-         var restaurantToUpdate = await _dbContext.Restaurants.SingleOrDefaultAsync(r => r.Id == id);
-         if (restaurantToUpdate == null)
+         var restaurantToDelete = await _dbContext.Restaurants.SingleOrDefaultAsync(r => r.Id == id && r.IsDeleted == false);
+         if (restaurantToDelete == null)
          {
             throw new RestaurantNotFoundException(id);
          }
 
-         restaurantToUpdate.SetDeleted();
+         restaurantToDelete.SetDeleted();
 
-         var entity = _dbContext.Attach(restaurantToUpdate);
+         var entity = _dbContext.Attach(restaurantToDelete);
          entity.State = EntityState.Modified;
 
          do
@@ -126,36 +113,49 @@ namespace OdeToFood.Data.Repositories
             try
             {
                // Attempt to save changes to the database
-               return await _dbContext.SaveChangesAsync();
+               int affectedRows = await _dbContext.SaveChangesAsync();
+               if (affectedRows == 0)
+               {
+                  return null;
+               }
+
+               return restaurantToDelete;
             }
             catch (DbUpdateConcurrencyException ex)
             {
-               foreach (var entry in ex.Entries)
+               var notSupportedEntityTypes = ex.Entries
+                  .Where(entry => !(entry.Entity is Restaurant))
+                  .Select(entry => entry.Metadata.Name)
+                  .ToList();
+
+               if (notSupportedEntityTypes.Count == 0)
                {
-                  if (entry.Entity is Restaurant)
+                  foreach (var entry in ex.Entries)
                   {
                      var proposedValues = entry.CurrentValues;
                      var databaseValues = entry.GetDatabaseValues();
 
-                     foreach (var property in proposedValues.Properties)
+                     if ((bool)databaseValues["IsDeleted"])
                      {
-                        var proposedValue = proposedValues[property];
-                        var databaseValue = databaseValues[property];
-
-                        // TODO: decide which value should be written to database
-                        // proposedValues[property] = <value to be saved>;
+                        throw new RestaurantIsAlreadyDeleted(id);
                      }
 
                      // Refresh original values to bypass next concurrency check
                      entry.OriginalValues.SetValues(databaseValues);
                   }
-                  else
-                  {
-                     throw new NotSupportedException($"Don't know how to handle concurrency conflicts for {entry.Metadata.Name}");
-                  }
+               }
+               else
+               {
+                  throw new NotSupportedException("Don't know how to handle concurrency conflicts for " + string.Join(", ", notSupportedEntityTypes));
                }
             }
-         } while (true);
+         }
+         while (true);
+      }
+
+      public async Task<int> CountAsync(CuisineType? cuisineType)
+      {
+         return await _dbContext.Restaurants.Where(r => cuisineType.HasValue && r.CuisineType == cuisineType.Value).CountAsync();
       }
    }
 }

@@ -25,7 +25,7 @@ namespace OdeToFood.Data.Repositories
          };
       }
 
-      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name, CancellationToken cancellationToken = default)
+      public async Task<IEnumerable<Restaurant>> GetAllAsync(string name = "", CancellationToken cancellationToken = default)
       {
          var query = _restaurants.AsQueryable();
 
@@ -77,7 +77,7 @@ namespace OdeToFood.Data.Repositories
          }, cancellationToken);
       }
 
-      public async Task<int> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+      public async Task<Restaurant> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
       {
          return await Task.Run(() =>
          {
@@ -89,8 +89,16 @@ namespace OdeToFood.Data.Repositories
 
             restaurantToDelete.SetDeleted();
 
-            return 0;
+            return restaurantToDelete;
          }, cancellationToken);
+      }
+
+      public async Task<int> CountAsync(CuisineType? cuisineType)
+      {
+         return await Task.Run(() =>
+         {
+            return _restaurants.Where(r => cuisineType.HasValue && r.CuisineType == cuisineType.Value).Count();
+         });
       }
    }
 }

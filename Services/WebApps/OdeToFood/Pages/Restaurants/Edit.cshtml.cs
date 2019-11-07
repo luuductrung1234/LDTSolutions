@@ -55,7 +55,7 @@ namespace OdeToFood.Pages.Restaurants
 
       public async Task<IActionResult> OnPost()
       {
-         Message = "";
+         Message = string.Empty;
 
          if (ModelState.IsValid)
          {
