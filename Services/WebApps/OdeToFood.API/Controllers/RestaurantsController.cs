@@ -11,7 +11,7 @@ using LDTSolutions.Common.WebApi.Mvc;
 using OdeToFood.Core.Interfaces;
 using OdeToFood.Core.Models;
 
-namespace OdeToFood.Controllers
+namespace OdeToFood.API.Controllers
 {
    [Route("api/[controller]")]
    [ApiController]
