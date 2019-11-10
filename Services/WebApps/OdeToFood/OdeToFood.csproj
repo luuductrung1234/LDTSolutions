@@ -9,10 +9,6 @@
       <Exec Command="npm install" />
    </Target>
 
-   <Target Name="PostBuild" AfterTargets="ComputeFilesToPublish">
-      <Exec Command="npm install" />
-   </Target>
-
   <ItemGroup>
     <Content Include="node_modules\**" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
