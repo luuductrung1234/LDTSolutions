@@ -70,9 +70,11 @@ namespace PluralsightIdentityDemo
       {
          using (var connection = GetOpenConnection())
          {
-            return await connection.QueryFirstOrDefaultAsync(
+            var user = await connection.QueryFirstOrDefaultAsync<ApplicationUser>(
                "SELECT * FROM [ApplicationUsers] WHERE NormalizedUserName = @name",
                new { name = normalizedUserName });
+
+            return user;
          }
       }
 
@@ -153,7 +155,7 @@ namespace PluralsightIdentityDemo
 
       private static DbConnection GetOpenConnection()
       {
-         var connection = new SqlConnection("Server=TRUNG-LUU\\TRUNGSQLSERVER;Database=PluralsightDemo;User ID=sa;Password=Trung1997;");
+         var connection = new SqlConnection("Server=localhost,1433;Database=PluralsightDemo;User ID=sa;Password=Trung1997;");
 
          connection.Open();
 

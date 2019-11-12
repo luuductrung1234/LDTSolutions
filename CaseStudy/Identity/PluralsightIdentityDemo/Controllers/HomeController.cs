@@ -51,7 +51,7 @@ namespace PluralsightIdentityDemo.Controllers
          if (ModelState.IsValid)
          {
             var user = await userManager.FindByNameAsync(model.UserName);
-            if(user == null)
+            if (user == null)
             {
                user = new ApplicationUser()
                {
@@ -60,10 +60,23 @@ namespace PluralsightIdentityDemo.Controllers
                };
 
                var result = await userManager.CreateAsync(user, model.Password);
+
+               if (result.Errors.Count() == 0)
+                  return View("Success");
+               else
+               {
+                  foreach (var error in result.Errors)
+                  {
+                     ModelState.AddModelError("", error.Description);
+                  }
+
+                  return View();
+               }
             }
 
-            return View("Success");
+            ModelState.AddModelError("", "Account is already exist!");
          }
+
 
          return View();
       }
@@ -87,7 +100,7 @@ namespace PluralsightIdentityDemo.Controllers
          {
             var user = await userManager.FindByNameAsync(model.UserName);
 
-            if(user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
             {
                var identity = new ClaimsIdentity("cookies");
                identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id));
