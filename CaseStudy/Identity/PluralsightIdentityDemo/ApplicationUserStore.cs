@@ -1,10 +1,7 @@
 ﻿using Dapper;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
 using System.Data.Common;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -155,7 +152,8 @@ namespace PluralsightIdentityDemo
 
       private static DbConnection GetOpenConnection()
       {
-         var connection = new SqlConnection("Server=localhost,1433;Database=PluralsightDemo;User ID=sa;Password=Trung1997;");
+         var connection = new SqlConnection("Server=TRUNG-LUU\\TRUNGSQLSERVER;Database=PluralsightDemo;User ID=sa;Password=Trung1997;");
+         // var connection = new SqlConnection("Server=localhost,1433;Database=PluralsightDemo;User ID=sa;Password=Trung1997;");
 
          connection.Open();
 
