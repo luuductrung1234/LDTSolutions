@@ -106,7 +106,19 @@ namespace SecureUserManagementDemo.Controllers
          if (ModelState.IsValid)
          {
             // var signInResult = await ManualPasswordSignInAsync(model.UserName, model.Password);
+
+            // -------
+            // SignInManager obscures too much of the authencation logic and furthur blurs the line between the UserStore and Authentication.
+            //
+            // (*) if you don't have to for authentication and user management -> use SignInManager
+            // SignInManager also support:
+            // - logout
+            // - two factor
+            //
+            // (*) if you do have time, stick with the UserManager
+            // -------
             var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+
             if (signInResult.Succeeded)
             {
                return RedirectToAction("Index");
