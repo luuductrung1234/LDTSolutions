@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace IdentityWithEFDemo.Migrations
+namespace IdentityDemo.Infrastructure.Migrations
 {
     public partial class Init_Identity_Database : Migration
     {

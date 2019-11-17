@@ -2,17 +2,16 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
 
 using IdentityDemo.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity;
 
-namespace IdentityWithEFDemo
+namespace SecureUserManagementDemo
 {
    public class Startup
    {
@@ -28,26 +27,28 @@ namespace IdentityWithEFDemo
       {
          services.Configure<CookiePolicyOptions>(options =>
          {
-            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-            options.CheckConsentNeeded = context => true;
+               // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+               options.CheckConsentNeeded = context => true;
             options.MinimumSameSitePolicy = SameSiteMode.None;
          });
 
+
          services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
-         var connectionString = "Server=TRUNG-LUU\\TRUNGSQLSERVER;Database=PluralsightDemo;User ID=sa;Password=Trung1997;";
-         // var connectionString = "Server=localhost,1433;Database=PluralsightDemo;User ID=sa;Password=Trung1997;";
+         //var connectionString = "Server=TRUNG-LUU\\TRUNGSQLSERVER;Database=PluralsightDemo;User ID=sa;Password=Trung1997;";
+         var connectionString = "Server=localhost,1433;Database=PluralsightDemo;User ID=sa;Password=Trung1997;";
+         var migrationAssembly = typeof(AppIdentityDbContext).Assembly.GetName().Name;
          services.AddDbContext<AppIdentityDbContext>(options =>
-            options.UseSqlServer(connectionString));
+            options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(migrationAssembly)));
 
-         services.AddIdentityCore<ApplicationUser>(options => { });
-         services.AddScoped<IUserStore<ApplicationUser>,
-            UserStore<ApplicationUser, ApplicationRole, AppIdentityDbContext, Guid>>();
-         services.AddScoped<IRoleStore<ApplicationRole>,
-            RoleStore<ApplicationRole, AppIdentityDbContext, Guid>>();
+         services.AddIdentity<ApplicationUser, ApplicationRole>(options => { })
+            .AddEntityFrameworkStores<AppIdentityDbContext>()
+            .AddUserStore<UserStore<ApplicationUser, ApplicationRole, AppIdentityDbContext, Guid>>()
+            .AddRoleStore<RoleStore<ApplicationRole, AppIdentityDbContext, Guid>>()
+            .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>();
 
-         services.AddAuthentication("cookies")
-            .AddCookie("cookies", options => options.LoginPath = "/Home/Login");
+         services.ConfigureApplicationCookie(options =>
+            options.LoginPath = "/Home/Login");
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

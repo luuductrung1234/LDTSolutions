@@ -8,18 +8,24 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-using IdentityWithEFDemo.Models;
+using SecureUserManagementDemo.Models;
 using IdentityDemo.Infrastructure.Identity;
 
-namespace IdentityWithEFDemo.Controllers
+namespace SecureUserManagementDemo.Controllers
 {
    public class HomeController : Controller
    {
-      private readonly UserManager<ApplicationUser> userManager;
+      private readonly UserManager<ApplicationUser> _userManager;
+      private readonly IUserClaimsPrincipalFactory<ApplicationUser> _claimsPrincipalFactory;
+      private readonly SignInManager<ApplicationUser> _signInManager;
 
-      public HomeController(UserManager<ApplicationUser> userManager)
+      public HomeController(UserManager<ApplicationUser> userManager,
+                              IUserClaimsPrincipalFactory<ApplicationUser> claimsPrincipalFactory,
+                              SignInManager<ApplicationUser> signInManager)
       {
-         this.userManager = userManager;
+         _userManager = userManager;
+         _claimsPrincipalFactory = claimsPrincipalFactory;
+         _signInManager = signInManager;
       }
 
       public IActionResult Index()
@@ -51,7 +57,7 @@ namespace IdentityWithEFDemo.Controllers
       {
          if (ModelState.IsValid)
          {
-            var user = await userManager.FindByNameAsync(model.UserName);
+            var user = await _userManager.FindByNameAsync(model.UserName);
             if (user == null)
             {
                user = new ApplicationUser()
@@ -60,7 +66,7 @@ namespace IdentityWithEFDemo.Controllers
                   UserName = model.UserName
                };
 
-               var result = await userManager.CreateAsync(user, model.Password);
+               var result = await _userManager.CreateAsync(user, model.Password);
 
                if (result.Errors.Count() == 0)
                   return View("Success");
@@ -99,16 +105,10 @@ namespace IdentityWithEFDemo.Controllers
       {
          if (ModelState.IsValid)
          {
-            var user = await userManager.FindByNameAsync(model.UserName);
-
-            if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
+            // var signInResult = await ManualPasswordSignInAsync(model.UserName, model.Password);
+            var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
+            if (signInResult.Succeeded)
             {
-               var identity = new ClaimsIdentity("cookies");
-               identity.AddClaim(new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()));
-               identity.AddClaim(new Claim(ClaimTypes.Name, user.UserName));
-
-               await HttpContext.SignInAsync("cookies", new ClaimsPrincipal(identity));
-
                return RedirectToAction("Index");
             }
 
@@ -117,5 +117,36 @@ namespace IdentityWithEFDemo.Controllers
 
          return View();
       }
+
+
+      #region Helper Methods
+
+      /// <summary>
+      ///
+      /// Manual implementation sign-in with password.
+      ///
+      /// Alternatively, use <see cref="SignInManager{TUser}.PasswordSignInAsync(string, string, bool, bool)"/>
+      ///
+      /// </summary>
+      /// <param name="userName"></param>
+      /// <param name="password"></param>
+      /// <returns></returns>
+      private async Task<Microsoft.AspNetCore.Identity.SignInResult> ManualPasswordSignInAsync(string userName, string password)
+      {
+         var user = await _userManager.FindByNameAsync(userName);
+
+         if (user != null && await _userManager.CheckPasswordAsync(user, password))
+         {
+            ClaimsPrincipal principal = await _claimsPrincipalFactory.CreateAsync(user);
+
+            await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme, principal: principal);
+
+            return Microsoft.AspNetCore.Identity.SignInResult.Success;
+         }
+
+         return Microsoft.AspNetCore.Identity.SignInResult.Failed;
+      }
+
+      #endregion
    }
 }
