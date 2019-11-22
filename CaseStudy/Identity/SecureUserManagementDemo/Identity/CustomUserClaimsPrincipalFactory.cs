@@ -1,14 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
-
-using IdentityDemo.Infrastructure.Identity;
-using Microsoft.Extensions.Options;
 using System.Security.Claims;
 
-namespace Microsoft.AspNetCore.Identity
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Identity;
+
+using IdentityDemo.Infrastructure.Identity;
+
+namespace SecureUserManagementDemo.Identity
 {
    public class CustomUserClaimsPrincipalFactory
       : UserClaimsPrincipalFactory<ApplicationUser, ApplicationRole>

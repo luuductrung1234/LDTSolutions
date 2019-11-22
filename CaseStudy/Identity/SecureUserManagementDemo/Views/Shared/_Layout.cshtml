@@ -42,13 +42,22 @@
             <div class="navbar-text">
                @if (User.Identity.IsAuthenticated)
                {
-                  @User.Identity.Name;
-                  <a class="btn btn-outline-secondary my-2 my-sm-0" asp-area="" asp-controller="Home" asp-action="Logout">Logout</a>
+                  <div class="dropdown" style="display:inline-block;">
+                     <a class="nav-link" href="#" id="navBarProfiles" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        @User.Identity.Name
+                     </a>
+                     <div class="dropdown-menu" aria-labelledby="navBarProfiles">
+                        <a class="dropdown-item" asp-area="" asp-controller="Auth" asp-action="Profiles">Profiles</a>
+                        <a class="dropdown-item" asp-area="" asp-controller="Auth" asp-action="Principal">Identity Principal</a>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                     </div>
+                  </div>
+                  <a class="btn btn-outline-secondary my-2 my-sm-0" asp-area="" asp-controller="Auth" asp-action="Logout">Logout</a>
                }
                else
                {
-                  <a class="btn btn-secondary my-2 my-sm-0" asp-area="" asp-controller="Home" asp-action="Register">Register</a>
-                  <a class="btn btn-outline-success my-2 my-sm-0" asp-area="" asp-controller="Home" asp-action="Login">Login</a>
+                  <a class="btn btn-outline-secondary my-2 my-sm-0" asp-area="" asp-controller="Auth" asp-action="Register">Register</a>
+                  <a class="btn btn-success my-2 my-sm-0 text-light" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
                }
             </div>
          </div>
@@ -56,9 +65,7 @@
    </header>
    <div class="container">
       <partial name="_CookieConsentPartial" />
-      <main role="main" class="pb-3">
-         @RenderBody()
-      </main>
+      @RenderBody()
    </div>
 
    <footer class="border-top footer text-muted">

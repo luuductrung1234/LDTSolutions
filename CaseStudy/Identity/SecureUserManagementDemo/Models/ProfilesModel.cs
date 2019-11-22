@@ -6,18 +6,20 @@ using System.Threading.Tasks;
 
 namespace SecureUserManagementDemo.Models
 {
-   public class RegisterModel
+   public class ProfilesModel
    {
-      [DataType(DataType.EmailAddress)]
-      public string Email { get; set; }
-
       public string UserName { get; set; }
+
+      public string Email { get; set; }
 
       [DataType(DataType.Password)]
       public string Password { get; set; }
 
-      [Compare("Password")]
       [DataType(DataType.Password)]
+      public string NewPassword { get; set; }
+
+      [DataType(DataType.Password)]
+      [Compare("NewPassword")]
       public string ConfirmPassword { get; set; }
    }
 }

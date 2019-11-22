@@ -7,9 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Identity;
 
 using IdentityDemo.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
+
+using SecureUserManagementDemo.Identity;
 
 namespace SecureUserManagementDemo
 {
@@ -27,8 +29,8 @@ namespace SecureUserManagementDemo
       {
          services.Configure<CookiePolicyOptions>(options =>
          {
-               // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-               options.CheckConsentNeeded = context => true;
+            // This lambda determines whether user consent for non-essential cookies is needed for a given request.
+            options.CheckConsentNeeded = context => true;
             options.MinimumSameSitePolicy = SameSiteMode.None;
          });
 
@@ -41,14 +43,24 @@ namespace SecureUserManagementDemo
          services.AddDbContext<AppIdentityDbContext>(options =>
             options.UseSqlServer(connectionString, opts => opts.MigrationsAssembly(migrationAssembly)));
 
-         services.AddIdentity<ApplicationUser, ApplicationRole>(options => { })
+         services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
+            {
+               options.Tokens.EmailConfirmationTokenProvider = CustomIdentityOptions.EmailConfirmationTokenProvider;
+            })
             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddUserStore<UserStore<ApplicationUser, ApplicationRole, AppIdentityDbContext, Guid>>()
             .AddRoleStore<RoleStore<ApplicationRole, AppIdentityDbContext, Guid>>()
-            .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>();
+            .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>()
+            .AddDefaultTokenProviders()
+            .AddTokenProvider<EmailConfirmationTokenProvider<ApplicationUser>>(CustomIdentityOptions.EmailConfirmationTokenProvider);
 
-         services.ConfigureApplicationCookie(options =>
-            options.LoginPath = "/Home/Login");
+         services.Configure<DataProtectionTokenProviderOptions>(options =>
+            options.TokenLifespan = TimeSpan.FromHours(1));
+
+         services.Configure<EmailConfirmationTokenProviderOptions>(options =>
+            options.TokenLifespan = TimeSpan.FromDays(2));
+
+         services.ConfigureApplicationCookie(options => options.LoginPath = "/Auth/Login");
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
