@@ -166,6 +166,51 @@ namespace SecureUserManagementDemo.Controllers
          return View();
       }
 
+      /// <summary>
+      ///
+      /// Custom implementation sign-in with password.
+      ///
+      /// Alternatively, use <see cref="SignInManager{TUser}.PasswordSignInAsync(string, string, bool, bool)"/>
+      ///
+      /// </summary>
+      /// <param name="userName"></param>
+      /// <param name="password"></param>
+      /// <returns></returns>
+      private async Task<Microsoft.AspNetCore.Identity.SignInResult> CustomPasswordSignInAsync(string userName, string password)
+      {
+         var user = await _userManager.FindByNameAsync(userName);
+
+         if (user != null && !await _userManager.IsLockedOutAsync(user))
+         {
+            if (await _userManager.CheckPasswordAsync(user, password))
+            {
+               if (!await _userManager.IsEmailConfirmedAsync(user))
+               {
+                  ModelState.AddModelError("", "Email is not confirmed!");
+                  return Microsoft.AspNetCore.Identity.SignInResult.Failed;
+               }
+
+               await _userManager.ResetAccessFailedCountAsync(user);
+
+               ClaimsPrincipal principal = await _claimsPrincipalFactory.CreateAsync(user);
+
+               await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme, principal: principal);
+
+               return Microsoft.AspNetCore.Identity.SignInResult.Success;
+            }
+
+            await _userManager.AccessFailedAsync(user);
+
+            if(await _userManager.IsLockedOutAsync(user))
+            {
+               // at this time, user's account is locked out
+               // email user, notifying them of lockout
+            }
+         }
+
+         return Microsoft.AspNetCore.Identity.SignInResult.Failed;
+      }
+
       #endregion
 
       #region Sign Out
@@ -254,6 +299,11 @@ namespace SecureUserManagementDemo.Controllers
                   return View();
                }
 
+               if(await _userManager.IsLockedOutAsync(user))
+               {
+                  await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now);
+               }
+
                return View("Success");
             }
          }
@@ -296,43 +346,6 @@ namespace SecureUserManagementDemo.Controllers
          ModelState.AddModelError("", "Invalid request!");
 
          return View("Profiles");
-      }
-
-      #endregion
-
-
-      #region Helper Methods
-
-      /// <summary>
-      ///
-      /// Custom implementation sign-in with password.
-      ///
-      /// Alternatively, use <see cref="SignInManager{TUser}.PasswordSignInAsync(string, string, bool, bool)"/>
-      ///
-      /// </summary>
-      /// <param name="userName"></param>
-      /// <param name="password"></param>
-      /// <returns></returns>
-      private async Task<Microsoft.AspNetCore.Identity.SignInResult> CustomPasswordSignInAsync(string userName, string password)
-      {
-         var user = await _userManager.FindByNameAsync(userName);
-
-         if (user != null && await _userManager.CheckPasswordAsync(user, password))
-         {
-            if (!await _userManager.IsEmailConfirmedAsync(user))
-            {
-               ModelState.AddModelError("", "Email is not confirmed!");
-               return Microsoft.AspNetCore.Identity.SignInResult.Failed;
-            }
-
-            ClaimsPrincipal principal = await _claimsPrincipalFactory.CreateAsync(user);
-
-            await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme, principal: principal);
-
-            return Microsoft.AspNetCore.Identity.SignInResult.Success;
-         }
-
-         return Microsoft.AspNetCore.Identity.SignInResult.Failed;
       }
 
       #endregion

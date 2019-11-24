@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using IdentityDemo.Infrastructure.Identity;
 
 using LDTSolutions.Common.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace SecureUserManagementDemo.Identity
 {
@@ -26,10 +27,20 @@ namespace SecureUserManagementDemo.Identity
          services.AddIdentity<ApplicationUser, ApplicationRole>(options =>
             {
                options.Tokens.EmailConfirmationTokenProvider = CustomIdentityOptions.EmailConfirmationTokenProvider;
+
+               options.Password.RequireNonAlphanumeric = true;
+               options.Password.RequiredUniqueChars = 4;
+
+               options.User.RequireUniqueEmail = true;
+
+               options.Lockout.AllowedForNewUsers = true;
+               options.Lockout.MaxFailedAccessAttempts = 3;
+               options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
             })
             .AddEntityFrameworkStores<AppIdentityDbContext>()
             .AddUserStore<UserStore<ApplicationUser, ApplicationRole, AppIdentityDbContext, Guid>>()
             .AddRoleStore<RoleStore<ApplicationRole, AppIdentityDbContext, Guid>>()
+            .AddPasswordValidator<DoesNotContainPasswordValidator<ApplicationUser>>()
             .AddClaimsPrincipalFactory<CustomUserClaimsPrincipalFactory>()
             .AddDefaultTokenProviders()
             .AddTokenProvider<EmailConfirmationTokenProvider<ApplicationUser>>(CustomIdentityOptions.EmailConfirmationTokenProvider);
@@ -40,7 +51,14 @@ namespace SecureUserManagementDemo.Identity
          services.Configure<EmailConfirmationTokenProviderOptions>(options =>
             options.TokenLifespan = TimeSpan.FromDays(2));
 
-         services.ConfigureApplicationCookie(options => options.LoginPath = "/Auth/Login");
+         services.ConfigureApplicationCookie(options =>
+         {
+            options.LoginPath = "/Auth/Login";
+            options.Events = new CookieAuthenticationEvents
+            {
+               OnValidatePrincipal = SecurityStampValidator.ValidatePrincipalAsync
+            };
+         });
 
          return services;
       }
