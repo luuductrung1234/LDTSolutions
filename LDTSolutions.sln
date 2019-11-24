@@ -83,9 +83,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CoreIdentityDemo", "CaseStu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityWithEFDemo", "CaseStudy\Identity\IdentityWithEFDemo\IdentityWithEFDemo.csproj", "{CD2B48CE-CD86-47C3-81A8-708CBABF4A6B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SecureUserManagementDemo", "CaseStudy\Identity\SecureUserManagementDemo\SecureUserManagementDemo.csproj", "{69BCA36D-EC4F-43AA-BCD3-A5A03530CDEE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SecureUserManagementDemo", "CaseStudy\Identity\SecureUserManagementDemo\SecureUserManagementDemo.csproj", "{69BCA36D-EC4F-43AA-BCD3-A5A03530CDEE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IdentityDemo.Infrastructure", "CaseStudy\Identity\IdentityDemo.Infrastructure\IdentityDemo.Infrastructure.csproj", "{0657D801-B219-4539-80DA-B7FCC70BBBB0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityDemo.Infrastructure", "CaseStudy\Identity\IdentityDemo.Infrastructure\IdentityDemo.Infrastructure.csproj", "{0657D801-B219-4539-80DA-B7FCC70BBBB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LDTSolutions.Common.Identity", "Common\LDTSolutions.Common.Identity\LDTSolutions.Common.Identity.csproj", "{7C42ED86-3978-4332-AF43-A988EB3D7BC6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -287,6 +289,14 @@ Global
 		{0657D801-B219-4539-80DA-B7FCC70BBBB0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0657D801-B219-4539-80DA-B7FCC70BBBB0}.Release|x64.ActiveCfg = Release|Any CPU
 		{0657D801-B219-4539-80DA-B7FCC70BBBB0}.Release|x64.Build.0 = Release|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Debug|x64.Build.0 = Debug|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Release|x64.ActiveCfg = Release|Any CPU
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -322,6 +332,7 @@ Global
 		{CD2B48CE-CD86-47C3-81A8-708CBABF4A6B} = {409C8127-B5FA-4482-934B-C616E5533033}
 		{69BCA36D-EC4F-43AA-BCD3-A5A03530CDEE} = {409C8127-B5FA-4482-934B-C616E5533033}
 		{0657D801-B219-4539-80DA-B7FCC70BBBB0} = {409C8127-B5FA-4482-934B-C616E5533033}
+		{7C42ED86-3978-4332-AF43-A988EB3D7BC6} = {A91A3979-447E-4F27-9CAF-2EB2FAD2CEF7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2DB4EB5D-8FCC-44BF-ABE9-4C04A64A548F}
