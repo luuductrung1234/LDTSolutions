@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using SecureUserManagementDemo.Models;
 
 using IdentityDemo.Infrastructure.Identity;
+using System.Collections.Generic;
 
 namespace SecureUserManagementDemo.Controllers
 {
@@ -155,6 +156,11 @@ namespace SecureUserManagementDemo.Controllers
             // -------
             //var signInResult = await _signInManager.PasswordSignInAsync(model.UserName, model.Password, false, false);
 
+            if (signInResult.RequiresTwoFactor)
+            {
+               return RedirectToAction("TwoFactor");
+            }
+
             if (signInResult.Succeeded)
             {
                return RedirectToAction("Index", "Home");
@@ -192,16 +198,36 @@ namespace SecureUserManagementDemo.Controllers
 
                await _userManager.ResetAccessFailedCountAsync(user);
 
+               if (await _userManager.GetTwoFactorEnabledAsync(user))
+               {
+                  // perform Two-step Verification
+
+                  var validTFProviders = await _userManager.GetValidTwoFactorProvidersAsync(user);
+                  if (validTFProviders.Contains(TokenOptions.DefaultEmailProvider))
+                  {
+                     var token = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
+
+                     // TODO: send the email contains this generated token
+                     System.IO.File.WriteAllText("GeneratedUrl/email2sv.txt", token);
+
+                     await HttpContext.SignInAsync(scheme: IdentityConstants.TwoFactorUserIdScheme,
+                                                   principal: Store2FA(user.Id, TokenOptions.DefaultEmailProvider));
+
+                     return Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired;
+                  }
+               }
+
                ClaimsPrincipal principal = await _claimsPrincipalFactory.CreateAsync(user);
 
-               await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme, principal: principal);
+               await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme,
+                                             principal: principal);
 
                return Microsoft.AspNetCore.Identity.SignInResult.Success;
             }
 
             await _userManager.AccessFailedAsync(user);
 
-            if(await _userManager.IsLockedOutAsync(user))
+            if (await _userManager.IsLockedOutAsync(user))
             {
                // at this time, user's account is locked out
                // email user, notifying them of lockout
@@ -209,6 +235,17 @@ namespace SecureUserManagementDemo.Controllers
          }
 
          return Microsoft.AspNetCore.Identity.SignInResult.Failed;
+      }
+
+      private ClaimsPrincipal Store2FA(Guid userId, string provider)
+      {
+         var identity = new ClaimsIdentity(new List<Claim>
+         {
+            new Claim("sub", userId.ToString()),
+            new Claim("amr", provider)
+         }, IdentityConstants.TwoFactorUserIdScheme);
+
+         return new ClaimsPrincipal(identity);
       }
 
       #endregion
@@ -220,12 +257,70 @@ namespace SecureUserManagementDemo.Controllers
       {
          if (User.Identity.IsAuthenticated)
          {
+            // this method will signout all signin scheme
+            // ApplicationScheme, ExternalScheme, TwoFactorUserScheme
             await _signInManager.SignOutAsync();
 
             return RedirectToAction("Index", "Home");
          }
 
          return View("Error");
+      }
+
+      #endregion
+
+      #region Two Factor
+
+      [HttpGet]
+      public IActionResult TwoFactor()
+      {
+         return View();
+      }
+
+      [HttpPost]
+      public async Task<IActionResult> TwoFactor(TwoFactorModel model)
+      {
+         var result = await HttpContext.AuthenticateAsync(IdentityConstants.TwoFactorUserIdScheme);
+         if (!result.Succeeded)
+         {
+            ModelState.AddModelError("", "You login request has expired, please start over.");
+
+            return View();
+         }
+
+         if (ModelState.IsValid)
+         {
+            var userId = result.Principal.FindFirstValue("sub");
+
+            var user = await _userManager.FindByIdAsync(userId);
+
+            if (user != null)
+            {
+               var provider = result.Principal.FindFirstValue("amr");
+
+               var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, provider, model.Token);
+
+               if (isValid)
+               {
+                  await HttpContext.SignOutAsync(IdentityConstants.TwoFactorUserIdScheme);
+
+                  ClaimsPrincipal principal = await _claimsPrincipalFactory.CreateAsync(user);
+
+                  await HttpContext.SignInAsync(scheme: IdentityConstants.ApplicationScheme,
+                                                principal: principal);
+
+                  return RedirectToAction("Index", "Home");
+               }
+
+               ModelState.AddModelError("", "Invalid token.");
+
+               return View();
+            }
+
+            ModelState.AddModelError("", "Invalid token.");
+         }
+
+         return View();
       }
 
       #endregion
@@ -299,7 +394,7 @@ namespace SecureUserManagementDemo.Controllers
                   return View();
                }
 
-               if(await _userManager.IsLockedOutAsync(user))
+               if (await _userManager.IsLockedOutAsync(user))
                {
                   await _userManager.SetLockoutEndDateAsync(user, DateTimeOffset.Now);
                }
