@@ -1,0 +1,25 @@
+﻿
+@{
+   ViewData["Title"] = "RegisterAuthenticator";
+}
+
+@model RegisterAuthenticatorModel
+
+<div class="row">
+   <div class="col">
+      <h1 class="text-left">Register Authenticator</h1>
+      <p>Your authenticator key is: @Model.AuthenticatorKey</p>
+      <form asp-action="RegisterAuthenticator" method="post" class="form-horizontal">
+         <input asp-for="AuthenticatorKey" type="hidden" />
+         <div class="form-group">
+            <label asp-for="Code" class="col-sm-2"></label>
+            <div class="col-sm-10">
+               <input asp-for="Code" class="form-control" />
+            </div>
+         </div>
+         <button type="submit" class="btn btn-primary">Submit</button>
+         <div asp-validation-summary="All"></div>
+      </form>
+   </div>
+</div>
+

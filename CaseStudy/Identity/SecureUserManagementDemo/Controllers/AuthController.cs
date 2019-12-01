@@ -203,6 +203,15 @@ namespace SecureUserManagementDemo.Controllers
                   // perform Two-step Verification
 
                   var validTFProviders = await _userManager.GetValidTwoFactorProvidersAsync(user);
+
+                  if (validTFProviders.Contains(_userManager.Options.Tokens.AuthenticatorTokenProvider))
+                  {
+                     await HttpContext.SignInAsync(scheme: IdentityConstants.TwoFactorUserIdScheme,
+                                                   principal: Store2FA(user.Id, _userManager.Options.Tokens.AuthenticatorTokenProvider));
+
+                     return Microsoft.AspNetCore.Identity.SignInResult.TwoFactorRequired;
+                  }
+
                   if (validTFProviders.Contains(TokenOptions.DefaultEmailProvider))
                   {
                      var token = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
@@ -246,25 +255,6 @@ namespace SecureUserManagementDemo.Controllers
          }, IdentityConstants.TwoFactorUserIdScheme);
 
          return new ClaimsPrincipal(identity);
-      }
-
-      #endregion
-
-      #region Sign Out
-
-      [HttpGet]
-      public async Task<IActionResult> Logout()
-      {
-         if (User.Identity.IsAuthenticated)
-         {
-            // this method will signout all signin scheme
-            // ApplicationScheme, ExternalScheme, TwoFactorUserScheme
-            await _signInManager.SignOutAsync();
-
-            return RedirectToAction("Index", "Home");
-         }
-
-         return View("Error");
       }
 
       #endregion
@@ -321,6 +311,62 @@ namespace SecureUserManagementDemo.Controllers
          }
 
          return View();
+      }
+
+      [HttpGet]
+      [Authorize]
+      public async Task<IActionResult> RegisterAuthenticator()
+      {
+         var user = await _userManager.GetUserAsync(this.User);
+
+         var authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+         if (authenticatorKey == null)
+         {
+            await _userManager.ResetAuthenticatorKeyAsync(user);
+
+            authenticatorKey = await _userManager.GetAuthenticatorKeyAsync(user);
+         }
+
+         return View(new RegisterAuthenticatorModel { AuthenticatorKey = authenticatorKey });
+      }
+
+      [HttpGet]
+      [Authorize]
+      public async Task<IActionResult> RegisterAuthenticator(RegisterAuthenticatorModel model)
+      {
+         var user = await _userManager.GetUserAsync(this.User);
+
+         var isValid = await _userManager.VerifyTwoFactorTokenAsync(user, _userManager.Options.Tokens.AuthenticatorTokenProvider, model.Code);
+
+         if (!isValid)
+         {
+            ModelState.AddModelError("", "Code is invalid");
+
+            return View(model);
+         }
+
+         await _userManager.SetTwoFactorEnabledAsync(user, true);
+
+         return View("Success");
+      }
+
+      #endregion
+
+      #region Sign Out
+
+      [HttpGet]
+      public async Task<IActionResult> Logout()
+      {
+         if (User.Identity.IsAuthenticated)
+         {
+            // this method will signout all signin scheme
+            // ApplicationScheme, ExternalScheme, TwoFactorUserScheme
+            await _signInManager.SignOutAsync();
+
+            return RedirectToAction("Index", "Home");
+         }
+
+         return View("Error");
       }
 
       #endregion
