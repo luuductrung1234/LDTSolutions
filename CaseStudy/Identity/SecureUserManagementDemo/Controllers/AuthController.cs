@@ -206,6 +206,8 @@ namespace SecureUserManagementDemo.Controllers
 
                   if (validTFProviders.Contains(_userManager.Options.Tokens.AuthenticatorTokenProvider))
                   {
+                     // Multi-Factor with local device which is a token generator (mobile app such as Google Authenticator, or Authy,...)
+
                      await HttpContext.SignInAsync(scheme: IdentityConstants.TwoFactorUserIdScheme,
                                                    principal: Store2FA(user.Id, _userManager.Options.Tokens.AuthenticatorTokenProvider));
 
@@ -214,6 +216,8 @@ namespace SecureUserManagementDemo.Controllers
 
                   if (validTFProviders.Contains(TokenOptions.DefaultEmailProvider))
                   {
+                     // Multi-Factor with generated token and send to user's email
+
                      var token = await _userManager.GenerateTwoFactorTokenAsync(user, TokenOptions.DefaultEmailProvider);
 
                      // TODO: send the email contains this generated token
@@ -348,6 +352,64 @@ namespace SecureUserManagementDemo.Controllers
          await _userManager.SetTwoFactorEnabledAsync(user, true);
 
          return View("Success");
+      }
+
+      #endregion
+
+      #region External Authentication Sign In
+
+      public IActionResult ExternalLogin(string provider)
+      {
+         var properties = new AuthenticationProperties
+         {
+            RedirectUri = Url.Action("ExternalLoginCallback"),
+            Items = { { "scheme", provider } }
+         };
+
+         return Challenge(properties, provider);
+      }
+
+      public async Task<IActionResult> ExternalLoginCallBack()
+      {
+         var result = await HttpContext.AuthenticateAsync(IdentityConstants.ExternalScheme);
+
+         var externalUserId = result.Principal.FindFirstValue("sub")
+                              ?? result.Principal.FindFirstValue(ClaimTypes.NameIdentifier)
+                              ?? throw new Exception("Cannot find external user id");
+
+         var provider = result.Properties.Items["scheme"];
+
+         var user = await _userManager.FindByLoginAsync(provider, externalUserId);
+
+         if (user == null)
+         {
+            var email = result.Principal.FindFirstValue("email")
+                        ?? result.Principal.FindFirstValue(ClaimTypes.Email);
+            if (email != null)
+            {
+               user = await _userManager.FindByEmailAsync(email);
+
+               if (user == null)
+               {
+                  user = new ApplicationUser() { UserName = email, Email = email };
+                  await _userManager.CreateAsync(user);
+               }
+
+               await _userManager.AddLoginAsync(user, new UserLoginInfo(provider, externalUserId, provider));
+            }
+         }
+
+         if (user == null)
+         {
+            return View("Error");
+         }
+
+         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
+
+         var claimsPrincipal = await _claimsPrincipalFactory.CreateAsync(user);
+         await HttpContext.SignInAsync(IdentityConstants.ApplicationScheme, claimsPrincipal);
+
+         return RedirectToAction("Index");
       }
 
       #endregion

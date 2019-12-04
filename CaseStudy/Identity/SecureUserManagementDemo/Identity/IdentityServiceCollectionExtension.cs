@@ -60,6 +60,14 @@ namespace SecureUserManagementDemo.Identity
             };
          });
 
+         services.AddAuthentication()
+            .AddGoogle("google", options =>
+            {
+               options.ClientId = "";
+               options.ClientSecret = "";
+               options.SignInScheme = IdentityConstants.ExternalScheme;
+            });
+
          return services;
       }
    }
