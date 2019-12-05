@@ -1,0 +1,103 @@
+﻿@page
+@model OdeToFood.Pages.Restaurants.ListModel
+@{
+   ViewData["Title"] = "List";
+}
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+   <div class="alert alert-success" role="alert">
+      @Model.Message
+   </div>
+}
+
+<h2>Restaurants</h2>
+
+<div class="row">
+   <div class="col col-lg-11 col-sm-12" style="padding-top:5px;padding-bottom:5px">
+      <form method="get">
+         <div class="input-group">
+            <input type="hidden" asp-for="ViewMode" />
+            <input type="search" class="form-control" asp-for="SearchTerm" />
+            <div class="input-group-append">
+               <button class="btn btn-outline-secondary" type="button">
+                  <i class="fas fa-search"></i>
+               </button>
+            </div>
+         </div>
+      </form>
+   </div>
+   <div class="col col-lg-1 col-sm-12" style="padding-top:5px;padding-bottom:5px">
+      <div class="btn-group float-right" role="group" aria-label="Basic example">
+         <a class="btn btn-secondary" asp-page="./List"
+            asp-route-viewMode="@ViewMode.Table">
+            <i class="fas fa-th-list"></i>
+         </a>
+         <a class="btn btn-secondary" asp-page="./List"
+            asp-route-viewMode="@ViewMode.Grid">
+            <i class="fas fa-th-large"></i>
+         </a>
+      </div>
+   </div>
+</div>
+<br />
+
+@if (Model.ViewMode == ViewMode.Table)
+{
+   <table class="table">
+      <thead>
+         <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Cuisine</th>
+            <th>&ensp;</th>
+         </tr>
+      </thead>
+      <tbody>
+         @{
+            foreach (var restaurant in Model.Restaurants)
+            {
+               <tr>
+                  <td>@restaurant.Name</td>
+                  <td>@restaurant.Location</td>
+                  <td>@restaurant.CuisineType</td>
+                  <td>
+                     <a class="btn btn-lg"
+                        asp-page="./Detail"
+                        asp-route-restaurantId="@restaurant.Id">
+                        <i class="fas fa-info-circle"></i>
+                     </a>
+                     <a class="btn btn-lg"
+                        asp-page="./Edit"
+                        asp-route-restaurantId="@restaurant.Id">
+                        <i class="fas fa-edit"></i>
+                     </a>
+                     <a class="btn btn-lg"
+                        asp-page="./Delete"
+                        asp-route-restaurantId="@restaurant.Id">
+                        <i class="fas fa-trash"></i>
+                     </a>
+                  </td>
+               </tr>
+            }
+         }
+      </tbody>
+   </table>
+}
+else if (Model.ViewMode == ViewMode.Grid)
+{
+   <div class="row">
+      @foreach (var restaurant in Model.Restaurants)
+      {
+         <partial name="_SummaryPartial" model="restaurant" />
+      }
+   </div>
+}
+
+<a asp-page="./Edit" class="btn btn-primary">Add New</a>
+
+@section footer {
+   <br />
+   <p>This is footer in List of Restaurants</p>
+}
+

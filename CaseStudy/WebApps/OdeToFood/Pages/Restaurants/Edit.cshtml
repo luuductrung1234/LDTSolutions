@@ -1,0 +1,44 @@
+﻿@page "{restaurantId:Guid?}"
+@model OdeToFood.Pages.Restaurants.EditModel
+@{
+   ViewData["Title"] = "Edit";
+}
+
+<h2>Edit @Model.RestaurantDto.Name</h2>
+
+@if (!string.IsNullOrEmpty(Model.Message))
+{
+   <div class="alert alert-warning" role="alert">
+      @Model.Message
+   </div>
+}
+
+<form method="post">
+   <input type="hidden" asp-for="RestaurantDto.Id" />
+   <div class="form-group">
+      <label asp-for="RestaurantDto.Name"></label>
+      <input class="form-control" type="text" asp-for="RestaurantDto.Name" placeholder="Restaurant Name" />
+      <span class="text-danger" asp-validation-for="RestaurantDto.Name"></span>
+   </div>
+   <div class="form-group">
+      <label asp-for="RestaurantDto.Location"></label>
+      <input class="form-control" type="text" asp-for="RestaurantDto.Location" placeholder="Restaurant Location" />
+      <span class="text-danger" asp-validation-for="RestaurantDto.Location"></span>
+   </div>
+   <div class="form-group">
+      <div class="input-group">
+         <div class="input-group-prepend">
+            <label class="input-group-text" asp-for="RestaurantDto.CuisineType"></label>
+         </div>
+         <select class="custom-select"
+                 asp-for="RestaurantDto.CuisineType"
+                 asp-items="Model.Cuisines"></select>
+         <span class="text-danger" asp-validation-for="RestaurantDto.CuisineType"></span>
+      </div>
+   </div>
+   <button type="submit" class="btn btn-primary">Save</button>
+</form>
+
+@section Scripts {
+   <partial name="_ValidationScriptsPartial" />
+}
