@@ -1,0 +1,19 @@
+{
+  "name": "odetofood",
+  "version": "1.0.0",
+  "description": "aspnet core mvc demo",
+  "main": "site.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "ldt",
+  "license": "ISC",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.11.2",
+    "bootstrap": "^4.3.1",
+    "datatables.net-bs4": "^1.10.20",
+    "jquery": "^3.4.1",
+    "jquery-validation": "^1.19.1",
+    "jquery-validation-unobtrusive": "^3.2.11"
+  }
+}

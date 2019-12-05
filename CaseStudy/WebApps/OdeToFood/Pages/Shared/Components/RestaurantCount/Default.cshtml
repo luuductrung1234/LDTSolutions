@@ -1,0 +1,6 @@
+﻿@model RestaurantCountViewModel
+
+<div>
+   <span>There are @Model.Count @if (@Model.CuisineType.HasValue) { @Model.CuisineType.Value.ToString() } restaurants here.&nbsp;&nbsp;</span>
+   <a asp-page="/Restaurants/List" class="btn btn-outline-primary">See Them All</a>
+</div>
