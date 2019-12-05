@@ -1,0 +1,23 @@
+﻿@model TwoFactorModel
+
+@{
+   ViewData["Title"] = "TwoFactor";
+}
+
+<div class="row">
+   <div class="col">
+      <h1 class="text-left">2SV/2FA</h1>
+      <p>Please enter your code below</p>
+      <form asp-action="TwoFactor" method="post" class="form-horizontal">
+         <div class="form-group">
+            <label asp-for="Token" class="col-sm-2"></label>
+            <div class="col-sm-10">
+               <input asp-for="Token" class="form-control" />
+            </div>
+         </div>
+         <button type="submit" class="btn btn-primary">Submit</button>
+         <div asp-validation-summary="All"></div>
+      </form>
+   </div>
+</div>
+
